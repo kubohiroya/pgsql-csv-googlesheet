@@ -11,7 +11,7 @@ The tables to be synchronized are required to have 4 special columns: "id", "uui
     "createdAt" timestamp without time zone NOT NULL DEFAULT now(),
     "updatedAt" timestamp without time zone NOT NULL DEFAULT now(),
     "title" varchar,
-    "value" integer,.
+    "value" integer
     )
  
 # Usage
