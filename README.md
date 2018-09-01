@@ -22,20 +22,20 @@ The tables to be synchronized are required to have 4 special columns: "id", "uui
 5. Edit the content of Google Spreadsheet.
 6. Run 'yarn run merge' to write back your changed rows on Google Spreadsheet to PostgreSQL. The changed rows on PostgreSQL are also affect synchronization.
 
-## Usage to create new rows
+## Creating new rows
  
 1. Open your Google Spreadsheet file and select a sheet representing a table to be edited.
 2. Add a row with initial values including empty cell values of column "id", "uuid", "createdAt" and "updatedAt".
 3. Run 'yarn run merge'.
 
-## Usage to update rows
+## Updating rows
 
 1. Run 'yarn run merge'.
 2. Open your Google Spreadsheet file and select a sheet representing a table to be edited.
 3. Edit a row with updated values and set an empty(zero-length-string) value on "updatedAt". You have to leave the values of column "id", "uuid", "createdAt" unchanged.
 4. Run 'yarn run merge'.
 
-## Usage to remove rows
+## Removing rows
 
 1. Run 'yarn run merge'.
 2. Open your Google Spreadsheet file and select a sheet representing a table to be edited.
