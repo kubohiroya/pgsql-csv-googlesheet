@@ -2,3 +2,7 @@ node_modules/
 token.json
 client_secret.json
 output
+.idea/
+
+.idea/workspace.xml
+.idea/workspace.xml

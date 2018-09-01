@@ -29,7 +29,10 @@ const COLUMN_NAME_ID = 'id';
 const COLUMN_NAME_UUID = 'uuid';
 const COLUMN_NAME_CREATED_AT = 'createdAt';
 const COLUMN_NAME_UPDATED_AT = 'updatedAt';
-const CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_REMOVED = '';
+
+const CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_INSERTED = '';
+const CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_UPDATED = '';
+const CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_REMOVED = '-';
 
 const getColIndex = (table: Table) => {
     const idColIndex: number = table.fields.findIndex(
@@ -150,7 +153,7 @@ export const mergeSheetAndDB = async (
                 (rowValues: any[], rowIndex: number) => {
                     let id = rowValues[idColIndex];
                     if (
-                        id == '' &&
+                        id == CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_INSERTED &&
                         tableFromDB.values &&
                         tableFromDB.values[rowIndex] &&
                         tableFromDB.values[rowIndex][idColIndex]
@@ -159,25 +162,23 @@ export const mergeSheetAndDB = async (
                         rowValues[idColIndex] = id;
                     }
                     let uuid = rowValues[uuidColIndex];
-                    if (uuid == '') {
+                    if (uuid == CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_INSERTED) {
                         uuid = uuidv4();
                         rowValues[uuidColIndex] = uuid;
                     }
                     const createdAt = rowValues[createdAtColIndex];
                     const updatedAt = rowValues[updatedAtColIndex];
 
-                    if (id != '' && (createdAt ==
-                        CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_REMOVED
-                        ||
+                    if (id != CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_INSERTED &&
                         updatedAt ==
-                        CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_REMOVED)
+                        CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_REMOVED
                     ) {
                         mustBeRemovedUUIDs[uuid] = true;
                     } else {
-                        if (createdAt == '') {
+                        if (createdAt == CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_INSERTED) {
                             rowValues[createdAtColIndex] = now;
                         }
-                        if (updatedAt == '') {
+                        if (updatedAt == CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_UPDATED) {
                             rowValues[updatedAtColIndex] = now;
                         }
                     }
