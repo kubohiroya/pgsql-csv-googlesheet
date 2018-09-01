@@ -1,0 +1,16 @@
+{
+    "host": "localhost",
+    "user": "tap2act",
+    "password": "tap2act",
+    "database": "tap2act",
+    "port": 5432,
+    "tables": [
+        "organization",
+        "user",
+        "project",
+        "role",
+        "subject",
+        "activity_context",
+        "activity_tag"
+    ]
+}
