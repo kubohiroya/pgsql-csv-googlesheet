@@ -5,14 +5,14 @@ Bi-directional synchronization of updated rows on PostgreSQL and Google Spreadsh
 
 The tables to be synchronized are required to have 4 special columns: "id", "uuid", "createdAt" and "updatedAt" columns.
 
-`CREATE TABLE sample_table_to_be_sync (
+   CREATE TABLE sample_table_to_be_sync (
     "id" SERIAL PRIMARY KEY,
     "uuid" uuid NOT NULL DEFAULT uuid_generate_v4() UNIQUE,
     "createdAt" timestamp without time zone NOT NULL DEFAULT now(),
     "updatedAt" timestamp without time zone NOT NULL DEFAULT now(),
     "title" varchar,
     "value" integer,.
-    )`
+    )
  
 # Usage
 1. Prepare an empty Google Spreadsheet on your Google Drive.
