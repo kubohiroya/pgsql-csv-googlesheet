@@ -1,0 +1,39 @@
+{
+  "name": "pgsql-csv-googlesheet",
+  "version": "1.0.0",
+  "description": "Bi-directional synchronization of updated rows on PostgreSQL and Google Spreadsheets",
+  "main": "src/index.ts",
+  "author": "hiroya@cuc.ac.jp",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@types/lodash": "^4.14.116",
+    "@types/pg": "^7.4.10",
+    "google-auth-library": "^1.6.1",
+    "googleapis": "^32.0.0",
+    "lodash": "^4.17.10",
+    "pg": "^7.4.3",
+    "readline": "^1.3.0",
+    "ts-node": "^7.0.1",
+    "tslib": "^1.9.3",
+    "typescript": "^3.0.1",
+    "uuid": "^3.3.2"
+  },
+  "config": {
+    "dbconfig": "../dbconfig.json",
+    "tokenPath": "./token.json",
+    "clientSecretPath": "./client_secret.json",
+    "spreadsheetId": "1dR2753vctChQZRWosUoNWAYtb4-CZFV2KWOjcNpFikw",
+    "dumpdir": "/tmp/dump",
+    "restoredir": "/tmp/restore"
+  },
+  "scripts": {
+    "oauth":   "ts-node src/oauth.ts",
+    "dump":    "ts-node src/dump.ts  $npm_package_config_dumpconfig $npm_package_config_dumpdir",
+    "clear":   "ts-node src/clear.ts $npm_package_config_dbconfig",
+    "restore": "ts-node src/restore.ts $npm_package_config_dbconfig $npm_package_config_restoredir",
+    "fetch":   "ts-node src/fetch.ts $npm_package_config_tokenPath $npm_package_config_clientSecretPath $npm_package_config_spreadsheetId $npm_package_config_dbconfig",
+    "post":    "ts-node src/post.ts  $npm_package_config_tokenPath $npm_package_config_clientSecretPath $npm_package_config_spreadsheetId $npm_package_config_dbconfig",
+    "merge":   "ts-node src/merge.ts $npm_package_config_tokenPath $npm_package_config_clientSecretPath $npm_package_config_spreadsheetId $npm_package_config_dbconfig"
+  }
+}
