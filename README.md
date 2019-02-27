@@ -3,7 +3,7 @@ Bi-directional synchronization of updated rows on PostgreSQL and Google Spreadsh
 
 # Requirement
 
-The tables to be synchronized are required to have 4 special columns: "id", "uuid", "createdAt" and "updatedAt" columns.
+The tables to be synchronized are required to have 4 special columns: "id", "uuid", "createdAt" and "updatedAt".
 
    CREATE TABLE sample_table_to_be_sync (
     "id" SERIAL PRIMARY KEY,
@@ -16,7 +16,7 @@ The tables to be synchronized are required to have 4 special columns: "id", "uui
  
 # Usage
 1. Prepare an empty Google Spreadsheet on your Google Drive.
-2. Prepare yuor initial database image on your PostgreSQL server.
+2. Prepare your initial database image on your PostgreSQL server.
 3. Edit 'dbconfig.json'.
 4. Run 'yarn run merge' to copy initial content from PostgreSQL to Google Spreadsheet. At the initial access to your Google Drive, you must be authorized with OAuth2 and you will see your client_secret.json and token.json files created/updated in your current directory.
 5. Edit the content of Google Spreadsheet.
