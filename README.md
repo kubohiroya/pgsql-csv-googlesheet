@@ -18,7 +18,7 @@ The tables to be synchronized are required to have 4 special columns: "id", "uui
 1. Prepare an empty Google Spreadsheet on your Google Drive.
 2. Prepare your initial database image on your PostgreSQL server.
 3. Edit 'dbconfig.json'.
-4. Run 'yarn run merge' to copy initial content from PostgreSQL to Google Spreadsheet. At the initial access to your Google Drive, you must be authorized with OAuth2 and you will see your client_secret.json and token.json files created/updated in your current directory.
+4. Run 'yarn run merge' to copy initial content from PostgreSQL to Google Spreadsheet. At the first time of access to your Google Drive you are going to be authorized with OAuth2, then client_secret.json and token.json files created/updated in your current directory.
 5. Edit the content of Google Spreadsheet.
 6. Run 'yarn run merge' to write back your changed rows on Google Spreadsheet to PostgreSQL. The changed rows on PostgreSQL are also affect synchronization.
 
