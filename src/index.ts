@@ -5,7 +5,7 @@
     "restore": "ts-node src/restore.ts $npm_package_config_dbconfig $npm_package_config_restoredir",
     "fetch":   "ts-node src/fetch.ts $npm_package_config_tokenPath $npm_package_config_clientSecretPath $npm_package_config_spreadsheetId $npm_package_config_restoredir",
     "post":    "ts-node src/post.ts  $npm_package_config_tokenPath $npm_package_config_clientSecretPath $npm_package_config_spreadsheetId $npm_package_config_dumpdir",
-    "mergeUtil":   "ts-node src/mergeUtilUtil.ts $npm_package_config_tokenPath $npm_package_config_clientSecretPath $npm_package_config_spreadsheetId $npm_package_config_dumpdir $npm_package_config_restoredir"
+    "merge":   "ts-node src/merge.ts $npm_package_config_tokenPath $npm_package_config_clientSecretPath $npm_package_config_spreadsheetId $npm_package_config_dumpdir $npm_package_config_restoredir"
     */
 import { oauth } from './lib/OAuthUtil';
 import { mkdir } from './lib/mkdir';
