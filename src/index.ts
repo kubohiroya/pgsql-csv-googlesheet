@@ -21,6 +21,8 @@ import {
     fetchSheetTitleIdRelations, insertOrUpdateTablesOnSheets,
     readTablesFromSheets,
 } from './lib/SpredsheetUtil';
+import { mergeSheetAndDB } from './lib/MergeUtil';
+
 import { Table } from './lib/Table';
 
 import {Client, FieldDef} from 'pg';
@@ -28,12 +30,21 @@ export const SCOPE_SPREADSHEET: string[] = [
     'https://www.googleapis.com/auth/spreadsheets',
 ];
 
+export type DBConfig = {
+    "host": string,
+    "user": string,
+    "password": string,
+    "database": string,
+    "port": number,
+    "tables": string[]
+}
+
 export const fetch = async (
     tokenPath: string,
     cientSecretPath: string,
     scope: string[],
     spreadsheetId: string,
-    dbconfig: any
+    dbconfig: DBConfig
 ) => {
     const auth = await oauth(tokenPath, cientSecretPath, scope);
     const sheets = await createSheetAPIClient(auth);
@@ -67,7 +78,7 @@ export const post = async (
     clientSecretPath: string,
     scope: string[],
     spreadsheetId: string,
-    dbconfig: any, // srcdir: string,
+    dbconfig:DBConfig // srcdir: string,
 ) => {
     const auth = await oauth(tokenPath, clientSecretPath, scope);
     // const csvFileList: string[] = await getCsvFileList(srcdir);
@@ -82,7 +93,7 @@ export const post = async (
     console.log('done.');
 };
 
-export const dump = async (dbconfig: any, outdir: string) => {
+export const dump = async (dbconfig: DBConfig, outdir: string) => {
     try {
         mkdir(outdir);
         const client = new Client(dbconfig);
@@ -100,16 +111,16 @@ export const dump = async (dbconfig: any, outdir: string) => {
     }
 };
 
-export const clear = async (dbconfig: any) => {
+export const clear = async (dbconfig: DBConfig) => {
     await clearDB(dbconfig);
 };
 
-export const restore = async (dbconfig: any, srcdir: string) => {
+export const restore = async (dbconfig: DBConfig, srcdir: string) => {
     try {
         const client = new Client(dbconfig);
         await client.connect();
         await Promise.all(
-            restoreDBFromCSV(srcdir, dbconfig.tableNames).map(async ({ statement, args }) => {
+            restoreDBFromCSV(srcdir, dbconfig.tables).map(async ({ statement, args }) => {
                 return client.query(statement, args);
             }),
         );
@@ -118,4 +129,17 @@ export const restore = async (dbconfig: any, srcdir: string) => {
     } catch (err) {
         console.error(err);
     }
+};
+
+export const merge =  async (tokenPath: string,
+        clientSecretPath: string,
+        spreadsheetId: string,
+        dbconfig: DBConfig) => {
+  mergeSheetAndDB(
+        tokenPath,
+        clientSecretPath,
+        SCOPE_SPREADSHEET,
+        spreadsheetId,
+        dbconfig
+  );
 };
