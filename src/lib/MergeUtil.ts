@@ -1,5 +1,5 @@
-import _ from 'lodash';
-import moment from 'moment';
+import * as _ from 'lodash';
+const moment = require('moment');
 
 const uuidv4 = require('uuid/v4');
 

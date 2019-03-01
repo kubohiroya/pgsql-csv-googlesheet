@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { SheetTitleIdRelation } from './SheetTitleIdRelation';
 import { Table } from './Table';
 
