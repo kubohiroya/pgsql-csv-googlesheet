@@ -8,6 +8,7 @@
   "private": false,
   "dependencies": {
     "@types/pg": "^7.4.10",
+    "fs-extra": "^7.0.1",
     "google-auth-library": "^1.6.1",
     "googleapis": "^32.0.0",
     "lodash": "^4.17.11",
@@ -34,5 +35,9 @@
     "fetch": "ts-node src/fetch.ts $npm_package_config_tokenPath $npm_package_config_clientSecretPath $npm_package_config_spreadsheetId $npm_package_config_dbconfig",
     "post": "ts-node src/post.ts  $npm_package_config_tokenPath $npm_package_config_clientSecretPath $npm_package_config_spreadsheetId $npm_package_config_dbconfig",
     "merge": "ts-node src/merge.ts $npm_package_config_tokenPath $npm_package_config_clientSecretPath $npm_package_config_spreadsheetId $npm_package_config_dbconfig"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^5.0.5",
+    "@types/lodash": "^4.14.121"
   }
 }

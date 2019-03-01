@@ -1,16 +1,16 @@
 import {google} from 'googleapis';
 import readline from 'readline';
-import fs from 'fs';
+import * as fs from 'fs-extra';
 
-export const oauth = (tokenPath, clientSecretPath, scope) => {
+export const oauth = (tokenPath: string, clientSecretPath: string, scope: string[]) => {
     // Load client secrets from a local file.
     return new Promise(function(resolve, reject) {
-        fs.readFile(clientSecretPath, (err, content) => {
+        fs.readFile(clientSecretPath, (err: any, content: Buffer) => {
             if (err) {
                 return reject('Error loading client secret file:'+ err);
             }
             // Authorize a client with credentials, then call the Google Sheets API.
-            authorize(tokenPath, JSON.parse(content), scope).then(auth => {
+            authorize(tokenPath, JSON.parse(content.toString()), scope).then(auth => {
                 resolve(auth);
             });
         });
@@ -23,7 +23,7 @@ export const oauth = (tokenPath, clientSecretPath, scope) => {
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-function authorize(tokenPath, credentials, scope) {
+function authorize(tokenPath: string, credentials: any, scope: string[]) {
     return new Promise(function(resolve) {
         const {
             client_secret,
@@ -37,13 +37,13 @@ function authorize(tokenPath, credentials, scope) {
         );
 
         // Check if we have previously stored a token.
-        fs.readFile(tokenPath, (err, token) => {
+        fs.readFile(tokenPath, (err: any, token: Buffer) => {
             if (err) {
                 getNewToken(oAuth2Client, tokenPath, scope).then(oauth => {
                     return resolve(oauth);
                 });
             } else {
-                oAuth2Client.setCredentials(JSON.parse(token));
+                oAuth2Client.setCredentials(JSON.parse(token.toString()));
                 return resolve(oAuth2Client);
             }
         });
@@ -56,7 +56,7 @@ function authorize(tokenPath, credentials, scope) {
  * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
  * @param {getEventsCallback} callback The callback for the authorized client.
  */
-function getNewToken(oAuth2Client, tokenPath, scope) {
+function getNewToken(oAuth2Client: any, tokenPath: string, scope: string[]) {
     return new Promise(function(resolve, reject) {
         const authUrl = oAuth2Client.generateAuthUrl({
             access_type: 'offline',
@@ -69,11 +69,10 @@ function getNewToken(oAuth2Client, tokenPath, scope) {
         });
         rl.question('Enter the code from that page here: ', code => {
             rl.close();
-            oAuth2Client.getToken(code, (err, token) => {
+            oAuth2Client.getToken(code, (err: any, token: Buffer) => {
                 if (err) {
                     return reject(
-                        'Error while trying to retrieve access token',
-                        err,
+                        'Error while trying to retrieve access token'
                     );
                 }
                 oAuth2Client.setCredentials(token);
