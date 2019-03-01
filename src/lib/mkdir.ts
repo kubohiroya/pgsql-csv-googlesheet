@@ -1,4 +1,4 @@
-import fs from 'fs';
+import * as fs from 'fs-extra';
 export const mkdir = (dir: string)=>{
     if (fs.statSync(dir).isDirectory()) {
         fs.readdirSync(dir).forEach(file => {
