@@ -2,7 +2,7 @@
   "name": "pgsql-csv-googlesheet",
   "version": "1.0.0",
   "description": "Bi-directional synchronization of updated rows on PostgreSQL and Google Spreadsheets",
-  "main": "src/index.ts",
+  "main": "build/index",
   "author": "hiroya@cuc.ac.jp",
   "license": "MIT",
   "private": false,
