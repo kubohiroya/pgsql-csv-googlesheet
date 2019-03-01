@@ -46,13 +46,21 @@ const getColIndex = (table: Table) => {
 };
 
 export const mergeSheetAndDB = async (
-    tokenPath: string,
-    clientSecretPath: string,
-    scope: string[],
-    spreadsheetId: string,
-    dbconfig: any,
-) => {
+  tokenPath: string,
+  clientSecretPath: string,
+  scope: string[],
+  spreadsheetId: string,
+  dbconfig: any,
+)=>{
     const auth = await oauth(tokenPath, clientSecretPath, scope);
+    mergeSheetAndDBWithAuth(auth, spreadsheetId, dbconfig);
+}
+
+export const mergeSheetAndDBWithAuth = async (
+  auth: any,
+  spreadsheetId: string,
+  dbconfig: any,
+) => {
     const sheet = await createSheetAPIClient(auth);
 
     /*

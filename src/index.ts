@@ -7,7 +7,7 @@ import {
     fetchSheetTitleIdRelations, insertOrUpdateTablesOnSheets,
     readTablesFromSheets,
 } from './lib/SpredsheetUtil';
-import { mergeSheetAndDB } from './lib/MergeUtil';
+import {mergeSheetAndDB, mergeSheetAndDBWithAuth} from './lib/MergeUtil';
 
 import { Table } from './lib/Table';
 
@@ -118,20 +118,17 @@ export const restore = async (dbconfig: DBConfig, srcdir: string) => {
     }
 };
 
-export const merge =  async (tokenPath: string,
-                             clientSecretPath: string,
+export const merge =  async (oauth: any,
                              spreadsheetId: string,
                              dbconfig: DBConfig) => {
-  mergeSheetAndDB(
-        tokenPath,
-        clientSecretPath,
-        SCOPE_SPREADSHEET,
-        spreadsheetId,
-        dbconfig
-  );
+    mergeSheetAndDBWithAuth(
+      oauth,
+      spreadsheetId,
+      dbconfig
+    );
 };
 
 export const auth = async (tokenPath: string,
                            clientSecretPath: string) => {
-    return oauth(tokenPath, clientSecretPath, ['https://www.googleapis.com/auth/spreadsheets']);
+    return oauth(tokenPath, clientSecretPath, ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive.readonly']);
 }

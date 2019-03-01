@@ -5,14 +5,9 @@ import * as fs from 'fs-extra';
 export const oauth = (tokenPath: string, clientSecretPath: string, scope: string[]) => {
     // Load client secrets from a local file.
     return new Promise(function(resolve, reject) {
-        fs.readFile(clientSecretPath, (err: any, content: Buffer) => {
-            if (err) {
-                return reject('Error loading client secret file:'+ err);
-            }
-            // Authorize a client with credentials, then call the Google Sheets API.
-            authorize(tokenPath, JSON.parse(content.toString()), scope).then(auth => {
-                resolve(auth);
-            });
+        const credentials = require(clientSecretPath);
+        authorize(tokenPath, credentials, scope).then(auth => {
+            resolve(auth);
         });
     });
 };
