@@ -2,8 +2,6 @@ import {google} from 'googleapis';
 import readline from 'readline';
 import fs from 'fs';
 
-// oauth('token.json', './client_secret.json').then()
-
 export const oauth = (tokenPath, clientSecretPath, scope) => {
     // Load client secrets from a local file.
     return new Promise(function(resolve, reject) {

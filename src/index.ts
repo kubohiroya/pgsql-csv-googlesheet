@@ -26,6 +26,7 @@ import { mergeSheetAndDB } from './lib/MergeUtil';
 import { Table } from './lib/Table';
 
 import {Client, FieldDef} from 'pg';
+
 export const SCOPE_SPREADSHEET: string[] = [
     'https://www.googleapis.com/auth/spreadsheets',
 ];
@@ -132,9 +133,9 @@ export const restore = async (dbconfig: DBConfig, srcdir: string) => {
 };
 
 export const merge =  async (tokenPath: string,
-        clientSecretPath: string,
-        spreadsheetId: string,
-        dbconfig: DBConfig) => {
+                             clientSecretPath: string,
+                             spreadsheetId: string,
+                             dbconfig: DBConfig) => {
   mergeSheetAndDB(
         tokenPath,
         clientSecretPath,
@@ -143,3 +144,8 @@ export const merge =  async (tokenPath: string,
         dbconfig
   );
 };
+
+export const auth = async (tokenPath: string,
+                           clientSecretPath: string) => {
+    return oauth(tokenPath, clientSecretPath, ['https://www.googleapis.com/auth/spreadsheets']);
+}
