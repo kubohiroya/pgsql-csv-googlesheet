@@ -52,7 +52,7 @@ export const mergeSheetAndDB = async (
   spreadsheetId: string,
   dbconfig: any,
 )=>{
-    const auth = await oauth(tokenPath, clientSecretPath, scope);
+    const auth = await oauth(tokenPath, clientSecretPath, 'web', scope);
     mergeSheetAndDBWithAuth(auth, spreadsheetId, dbconfig);
 }
 

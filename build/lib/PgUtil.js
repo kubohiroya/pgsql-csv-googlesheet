@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const pg_1 = require("pg");
 const Table_1 = require("./Table");
-const lodash_1 = tslib_1.__importDefault(require("lodash"));
+const _ = tslib_1.__importStar(require("lodash"));
 const createOrReplaceFunction = (statement) => {
     return `
 CREATE OR REPLACE FUNCTION executeOnTables(path TEXT) RETURNS void AS $$
@@ -135,7 +135,7 @@ exports.insertOrUpdateTablesOnDB = async (dbconfig, tables) => {
             const colNamesStr = colNames
                 .map(colName => '"' + colName + '"')
                 .join(',');
-            const placeHolders = lodash_1.default.times(colNames.length)
+            const placeHolders = _.times(colNames.length)
                 .map(n => '$' + (n + 1))
                 .join(',');
             const updaters = colNames

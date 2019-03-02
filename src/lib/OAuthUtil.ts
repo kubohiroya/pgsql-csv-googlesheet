@@ -2,11 +2,11 @@ import {google} from 'googleapis';
 import * as readline from 'readline';
 import * as fs from 'fs-extra';
 
-export const oauth = (tokenPath: string, clientSecretPath: string, scope: string[]) => {
+export const oauth = (tokenPath: string, clientSecretPath: string, type: string, scope: string[]) => {
     // Load client secrets from a local file.
     return new Promise(function(resolve, reject) {
         const credentials = require(clientSecretPath);
-        authorize(tokenPath, credentials, scope).then(auth => {
+        authorize(tokenPath, credentials[type], scope).then(auth => {
             resolve(auth);
         });
     });
@@ -24,7 +24,7 @@ function authorize(tokenPath: string, credentials: any, scope: string[]) {
             client_secret,
             client_id,
             redirect_uris,
-        } = credentials.installed;
+        } = credentials;
         const oAuth2Client = new google.auth.OAuth2(
             client_id,
             client_secret,

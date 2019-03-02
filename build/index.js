@@ -10,25 +10,24 @@ exports.SCOPE_SPREADSHEET = [
     'https://www.googleapis.com/auth/spreadsheets',
 ];
 exports.fetch = async (tokenPath, cientSecretPath, scope, spreadsheetId, dbconfig) => {
-    const auth = await OAuthUtil_1.oauth(tokenPath, cientSecretPath, scope);
+    const auth = await OAuthUtil_1.oauth(tokenPath, cientSecretPath, 'web', scope);
     const sheets = await SpredsheetUtil_1.createSheetAPIClient(auth);
     const sheetTitleIdRelations = await SpredsheetUtil_1.fetchSheetTitleIdRelations(sheets, spreadsheetId);
     const tablesFromSheet = await SpredsheetUtil_1.readTablesFromSheets(sheets, spreadsheetId, sheetTitleIdRelations);
     const tablesFromDB = await PgUtil_1.readTablesFromDB(dbconfig);
     const fieldMap = {};
     tablesFromDB.forEach((tableFromDB) => {
-        tableFromDB.fields.forEach(field => fieldMap[`${tableFromDB.name},${field.name}`] = field);
+        tableFromDB.fields.forEach(field => (fieldMap[`${tableFromDB.name},${field.name}`] = field));
     });
-    tablesFromSheet.map((tableFromSheet) => {
+    tablesFromSheet.map(tableFromSheet => {
         tableFromSheet.fields = tableFromSheet.fields.map(field => fieldMap[`${tableFromSheet.name},${field}`]);
     });
     await PgUtil_1.clearDB(dbconfig);
     await PgUtil_1.insertOrUpdateTablesOnDB(dbconfig, tablesFromSheet);
     console.log('done.');
 };
-exports.post = async (tokenPath, clientSecretPath, scope, spreadsheetId, dbconfig // srcdir: string,
-) => {
-    const auth = await OAuthUtil_1.oauth(tokenPath, clientSecretPath, scope);
+exports.post = async (tokenPath, clientSecretPath, scope, spreadsheetId, dbconfig) => {
+    const auth = await OAuthUtil_1.oauth(tokenPath, clientSecretPath, 'web', scope);
     // const csvFileList: string[] = await getCsvFileList(srcdir);
     // const tables: Table[] = await readTablesFromCSVFiles(srcdir, csvFileList);
     const tables = await PgUtil_1.readTablesFromDB(dbconfig);
@@ -68,10 +67,13 @@ exports.restore = async (dbconfig, srcdir) => {
         console.error(err);
     }
 };
-exports.merge = async (tokenPath, clientSecretPath, spreadsheetId, dbconfig) => {
-    MergeUtil_1.mergeSheetAndDB(tokenPath, clientSecretPath, exports.SCOPE_SPREADSHEET, spreadsheetId, dbconfig);
+exports.merge = async (oauth, spreadsheetId, dbconfig) => {
+    MergeUtil_1.mergeSheetAndDBWithAuth(oauth, spreadsheetId, dbconfig);
 };
 exports.auth = async (tokenPath, clientSecretPath) => {
-    return OAuthUtil_1.oauth(tokenPath, clientSecretPath, ['https://www.googleapis.com/auth/spreadsheets']);
+    return OAuthUtil_1.oauth(tokenPath, clientSecretPath, 'web', [
+        'https://www.googleapis.com/auth/spreadsheets',
+        'https://www.googleapis.com/auth/drive.readonly',
+    ]);
 };
 //# sourceMappingURL=index.js.map

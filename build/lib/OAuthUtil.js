@@ -2,19 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const googleapis_1 = require("googleapis");
-const readline_1 = tslib_1.__importDefault(require("readline"));
+const readline = tslib_1.__importStar(require("readline"));
 const fs = tslib_1.__importStar(require("fs-extra"));
-exports.oauth = (tokenPath, clientSecretPath, scope) => {
+exports.oauth = (tokenPath, clientSecretPath, type, scope) => {
     // Load client secrets from a local file.
     return new Promise(function (resolve, reject) {
-        fs.readFile(clientSecretPath, (err, content) => {
-            if (err) {
-                return reject('Error loading client secret file:' + err);
-            }
-            // Authorize a client with credentials, then call the Google Sheets API.
-            authorize(tokenPath, JSON.parse(content.toString()), scope).then(auth => {
-                resolve(auth);
-            });
+        const credentials = require(clientSecretPath);
+        authorize(tokenPath, credentials[type], scope).then(auth => {
+            resolve(auth);
         });
     });
 };
@@ -26,7 +21,7 @@ exports.oauth = (tokenPath, clientSecretPath, scope) => {
  */
 function authorize(tokenPath, credentials, scope) {
     return new Promise(function (resolve) {
-        const { client_secret, client_id, redirect_uris, } = credentials.installed;
+        const { client_secret, client_id, redirect_uris, } = credentials;
         const oAuth2Client = new googleapis_1.google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
         // Check if we have previously stored a token.
         fs.readFile(tokenPath, (err, token) => {
@@ -55,7 +50,7 @@ function getNewToken(oAuth2Client, tokenPath, scope) {
             scope,
         });
         console.log('Authorize this app by visiting this url:', authUrl);
-        const rl = readline_1.default.createInterface({
+        const rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
         });

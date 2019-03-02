@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-const lodash_1 = tslib_1.__importDefault(require("lodash"));
-const moment_1 = tslib_1.__importDefault(require("moment"));
+const _ = tslib_1.__importStar(require("lodash"));
+const moment = require('moment');
 const uuidv4 = require('uuid/v4');
 const OAuthUtil_1 = require("./OAuthUtil");
 const PgUtil_1 = require("./PgUtil");
@@ -23,7 +23,10 @@ const getColIndex = (table) => {
     return { idColIndex, uuidColIndex, createdAtColIndex, updatedAtColIndex };
 };
 exports.mergeSheetAndDB = async (tokenPath, clientSecretPath, scope, spreadsheetId, dbconfig) => {
-    const auth = await OAuthUtil_1.oauth(tokenPath, clientSecretPath, scope);
+    const auth = await OAuthUtil_1.oauth(tokenPath, clientSecretPath, 'web', scope);
+    exports.mergeSheetAndDBWithAuth(auth, spreadsheetId, dbconfig);
+};
+exports.mergeSheetAndDBWithAuth = async (auth, spreadsheetId, dbconfig) => {
     const sheet = await SpredsheetUtil_1.createSheetAPIClient(auth);
     /*
     const csvFileList: string[] = await getCsvFileList(srcdir);
@@ -63,7 +66,7 @@ exports.mergeSheetAndDB = async (tokenPath, clientSecretPath, scope, spreadsheet
     const tablesFromSheets = (await SpredsheetUtil_1.readTablesFromSheets(sheet, spreadsheetId, sheetTitleIdRelations)).filter(table => !!table);
     const mustBeRemovedUUIDTables = [];
     // console.log("SHEET: "+JSON.stringify(tablesFromSheets, null, 2));
-    const now = moment_1.default().format('YYYY-MM-DD HH:mm:ss.SSSSSS');
+    const now = moment().format('YYYY-MM-DD HH:mm:ss.SSSSSS');
     const tables = tablesFromDB.map((tableFromDB) => {
         const valuesFromSheetMap = {};
         const valuesFromDBMap = {};
@@ -111,7 +114,7 @@ exports.mergeSheetAndDB = async (tokenPath, clientSecretPath, scope, spreadsheet
                 }
                 valuesFromSheetMap[uuid] = rowValues;
             });
-            intersection = lodash_1.default.intersection(Object.keys(valuesFromSheetMap), Object.keys(valuesFromDBMap));
+            intersection = _.intersection(Object.keys(valuesFromSheetMap), Object.keys(valuesFromDBMap));
             intersection.forEach(uuid => {
                 if (mustBeRemovedUUIDs[uuid]) {
                     console.log('DB x x x SH', tableFromSheet.name, uuid);
@@ -119,10 +122,10 @@ exports.mergeSheetAndDB = async (tokenPath, clientSecretPath, scope, spreadsheet
                 }
                 const valueFromDB = valuesFromDBMap[uuid];
                 const valueFromSheet = valuesFromSheetMap[uuid];
-                const updatedAtDB = moment_1.default(valueFromDB[updatedAtColIndex])
+                const updatedAtDB = moment(valueFromDB[updatedAtColIndex])
                     .toDate()
                     .getTime();
-                const updatedAtSheet = moment_1.default(valueFromSheet[updatedAtColIndex])
+                const updatedAtSheet = moment(valueFromSheet[updatedAtColIndex])
                     .toDate()
                     .getTime();
                 if (updatedAtDB == updatedAtSheet) {
@@ -141,7 +144,7 @@ exports.mergeSheetAndDB = async (tokenPath, clientSecretPath, scope, spreadsheet
                     return;
                 }
             });
-            lodash_1.default.pullAll(Object.keys(valuesFromSheetMap), intersection).forEach(uuid => {
+            _.pullAll(Object.keys(valuesFromSheetMap), intersection).forEach(uuid => {
                 if (!mustBeRemovedUUIDs[uuid]) {
                     console.log('DB < < <SH', tableFromSheet.name, uuid);
                     values.push(valuesFromSheetMap[uuid]);
@@ -153,7 +156,7 @@ exports.mergeSheetAndDB = async (tokenPath, clientSecretPath, scope, spreadsheet
         }
         // console.log("1 ... "+JSON.stringify(valuesFromDBMap, null, " " ))
         // console.log("2 ... "+JSON.stringify(intersection, null, " " ))
-        lodash_1.default.pullAll(Object.keys(valuesFromDBMap), intersection).forEach(uuid => {
+        _.pullAll(Object.keys(valuesFromDBMap), intersection).forEach(uuid => {
             if (!mustBeRemovedUUIDs[uuid]) {
                 console.log('DB> > > SH', tableFromDB.name, uuid);
                 values.push(valuesFromDBMap[uuid]);
