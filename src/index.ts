@@ -40,7 +40,7 @@ export const fetch = async (
   spreadsheetId: string,
   dbconfig: DBConfig,
 ) => {
-  const auth = await oauth(tokenPath, cientSecretPath, 'web', scope);
+  const auth = await oauth(tokenPath, cientSecretPath, 'installed', scope);
   const sheets = await createSheetAPIClient(auth);
   const sheetTitleIdRelations: SheetTitleIdRelation[] = await fetchSheetTitleIdRelations(
     sheets,
@@ -78,7 +78,7 @@ export const post = async (
   spreadsheetId: string,
   dbconfig: DBConfig, // srcdir: string,
 ) => {
-  const auth = await oauth(tokenPath, clientSecretPath, 'web', scope);
+  const auth = await oauth(tokenPath, clientSecretPath, 'installed', scope);
   // const csvFileList: string[] = await getCsvFileList(srcdir);
   // const tables: Table[] = await readTablesFromCSVFiles(srcdir, csvFileList);
   const tables: Table[] = await readTablesFromDB(dbconfig);
@@ -135,7 +135,7 @@ export const merge = async (
 };
 
 export const auth = async (tokenPath: string, clientSecretPath: string) => {
-  return oauth(tokenPath, clientSecretPath, 'web', [
+  return oauth(tokenPath, clientSecretPath, 'installed', [
     'https://www.googleapis.com/auth/spreadsheets',
     'https://www.googleapis.com/auth/drive.readonly',
   ]);
