@@ -20,29 +20,12 @@ import {
 } from './SpredsheetUtil';
 import { Table } from './Table';
 
-const COLUMN_NAME_ID = 'id';
-const COLUMN_NAME_UUID = 'uuid';
-const COLUMN_NAME_CREATED_AT = 'createdAt';
-const COLUMN_NAME_UPDATED_AT = 'updatedAt';
-
 const CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_INSERTED = '';
 const CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_UPDATED = '';
 const CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_REMOVED = '-';
 
 const getColIndex = (table: Table) => {
-  const idColIndex: number = table.fields.findIndex(
-    field => field.name == COLUMN_NAME_ID,
-  );
-  const uuidColIndex: number = table.fields.findIndex(
-    field => field.name == COLUMN_NAME_UUID,
-  );
-  const createdAtColIndex: number = table.fields.findIndex(
-    field => field.name == COLUMN_NAME_CREATED_AT,
-  );
-  const updatedAtColIndex: number = table.fields.findIndex(
-    field => field.name == COLUMN_NAME_UPDATED_AT,
-  );
-  return { idColIndex, uuidColIndex, createdAtColIndex, updatedAtColIndex };
+  return _.fromPairs(table.fields.map((f, index) => [f.name,index]))
 };
 
 export const mergeSheetAndDB = async (
@@ -55,6 +38,10 @@ export const mergeSheetAndDB = async (
 ) => {
   const auth = await oauth(tokenPath, clientSecretPath, type, scope);
   mergeSheetAndDBWithAuth(auth, spreadsheetId, dbconfig);
+};
+
+const regulateRowValues = (dbFieldNames: string[], sheetColIndex: {[fieldName: string]: number}, values: any[]) : any[] => {
+  return dbFieldNames.map((fieldName: string)=>values[sheetColIndex[fieldName]]);
 };
 
 export const mergeSheetAndDBWithAuth = async (
@@ -90,16 +77,16 @@ export const mergeSheetAndDBWithAuth = async (
   const tablesFromDB = (await readTablesFromDB(dbconfig)).filter(
     (tableFromDB: Table) => {
       const {
-        idColIndex,
-        uuidColIndex,
-        createdAtColIndex,
-        updatedAtColIndex,
+        id,
+        uuid,
+        createdAt,
+        updatedAt,
       } = getColIndex(tableFromDB);
       if (
-        idColIndex == -1 ||
-        uuidColIndex == -1 ||
-        createdAtColIndex == -1 ||
-        updatedAtColIndex == -1
+        id == -1 ||
+        uuid == -1 ||
+        createdAt == -1 ||
+        updatedAt == -1
       ) {
         return false;
       }
@@ -133,12 +120,13 @@ export const mergeSheetAndDBWithAuth = async (
     let intersection: string[];
     const values: any[][] = [];
 
-    const {
-      idColIndex,
-      uuidColIndex,
-      createdAtColIndex,
-      updatedAtColIndex,
-    } = getColIndex(tableFromDB);
+    const dbColIndex = getColIndex(tableFromDB);
+    const dbFieldNames = tableFromDB.fields.map((f)=>f.name);
+
+    const idColIndex = dbColIndex.id;
+    const uuidColIndex = dbColIndex.uuid;
+    const updatedAtColIndex = dbColIndex.updatedAt;
+    const createdAtColIndex = dbColIndex.createdAt;
 
     tableFromDB.values.forEach((rowValues: string[]) => {
       const uuid = rowValues[uuidColIndex];
@@ -150,9 +138,8 @@ export const mergeSheetAndDBWithAuth = async (
       tableFromSheet => tableFromSheet.name == tableFromDB.name,
     );
 
-    // console.log("tableFromSheet:"+tableFromSheet);
-
     if (tableFromSheet && 0 < tableFromSheet.values.length) {
+      const sheetColIndex = getColIndex(tableFromSheet);
       tableFromSheet.values.forEach((rowValues: any[], rowIndex: number) => {
         let id = rowValues[idColIndex];
         if (
@@ -199,7 +186,7 @@ export const mergeSheetAndDBWithAuth = async (
         }
 
         const valueFromDB = valuesFromDBMap[uuid];
-        const valueFromSheet = valuesFromSheetMap[uuid];
+        const valueFromSheet = regulateRowValues(dbFieldNames, sheetColIndex, valuesFromSheetMap[uuid]);
         const updatedAtDB: number = moment(valueFromDB[updatedAtColIndex])
           .toDate()
           .getTime();
