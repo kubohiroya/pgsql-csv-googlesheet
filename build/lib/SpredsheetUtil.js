@@ -49,7 +49,7 @@ exports.readTablesFromSheets = (sheets, spreadsheetId, sheetTitleIdRelations) =>
                     res.data.values.length > 1 &&
                     res.data.values.splice(1);
                 if (fields && values) {
-                    return resolve(new Table_1.Table(sheetTitleIdRelation.sheetTitle, fields, values, -1));
+                    return resolve(new Table_1.Table(sheetTitleIdRelation.sheetTitle, fields.map((f) => { name: f; }), values, -1));
                 }
                 else {
                     return resolve();

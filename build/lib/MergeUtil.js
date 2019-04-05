@@ -8,54 +8,49 @@ const OAuthUtil_1 = require("./OAuthUtil");
 const PgUtil_1 = require("./PgUtil");
 const SpredsheetUtil_1 = require("./SpredsheetUtil");
 const Table_1 = require("./Table");
-const COLUMN_NAME_ID = 'id';
-const COLUMN_NAME_UUID = 'uuid';
-const COLUMN_NAME_CREATED_AT = 'createdAt';
-const COLUMN_NAME_UPDATED_AT = 'updatedAt';
 const CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_INSERTED = '';
 const CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_UPDATED = '';
 const CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_REMOVED = '-';
 const getColIndex = (table) => {
-    const idColIndex = table.fields.findIndex(field => field.name == COLUMN_NAME_ID);
-    const uuidColIndex = table.fields.findIndex(field => field.name == COLUMN_NAME_UUID);
-    const createdAtColIndex = table.fields.findIndex(field => field.name == COLUMN_NAME_CREATED_AT);
-    const updatedAtColIndex = table.fields.findIndex(field => field.name == COLUMN_NAME_UPDATED_AT);
-    return { idColIndex, uuidColIndex, createdAtColIndex, updatedAtColIndex };
+    return _.fromPairs(table.fields.map((f, index) => [f.name, index]));
 };
-exports.mergeSheetAndDB = async (tokenPath, clientSecretPath, scope, spreadsheetId, dbconfig) => {
-    const auth = await OAuthUtil_1.oauth(tokenPath, clientSecretPath, 'web', scope);
+exports.mergeSheetAndDB = async (tokenPath, clientSecretPath, type, scope, spreadsheetId, dbconfig) => {
+    const auth = await OAuthUtil_1.oauth(tokenPath, clientSecretPath, type, scope);
     exports.mergeSheetAndDBWithAuth(auth, spreadsheetId, dbconfig);
+};
+const regulateRowValues = (dbFieldNames, sheetColIndex, values) => {
+    return dbFieldNames.map((fieldName) => values[sheetColIndex[fieldName]]);
 };
 exports.mergeSheetAndDBWithAuth = async (auth, spreadsheetId, dbconfig) => {
     const sheet = await SpredsheetUtil_1.createSheetAPIClient(auth);
     /*
-    const csvFileList: string[] = await getCsvFileList(srcdir);
-    const tablesFromCSV: Table[] = (await readTablesFromCSVFiles(
-        srcdir,
-        csvFileList,
-    )).filter((tableFromCSV: Table, index: number) => {
-        const {
-            idColIndex,
-            uuidColIndex,
-            createdAtColIndex,
-            updatedAtColIndex,
-        } = getColIndex(tableFromCSV);
-        if (
-            idColIndex == -1 ||
-            uuidColIndex == -1 ||
-            createdAtColIndex == -1 ||
-            updatedAtColIndex == -1
-        ) {
-            return false;
-        }
-        return true;
-    });*/
+      const csvFileList: string[] = await getCsvFileList(srcdir);
+      const tablesFromCSV: Table[] = (await readTablesFromCSVFiles(
+          srcdir,
+          csvFileList,
+      )).filter((tableFromCSV: Table, index: number) => {
+          const {
+              idColIndex,
+              uuidColIndex,
+              createdAtColIndex,
+              updatedAtColIndex,
+          } = getColIndex(tableFromCSV);
+          if (
+              idColIndex == -1 ||
+              uuidColIndex == -1 ||
+              createdAtColIndex == -1 ||
+              updatedAtColIndex == -1
+          ) {
+              return false;
+          }
+          return true;
+      });*/
     const tablesFromDB = (await PgUtil_1.readTablesFromDB(dbconfig)).filter((tableFromDB) => {
-        const { idColIndex, uuidColIndex, createdAtColIndex, updatedAtColIndex, } = getColIndex(tableFromDB);
-        if (idColIndex == -1 ||
-            uuidColIndex == -1 ||
-            createdAtColIndex == -1 ||
-            updatedAtColIndex == -1) {
+        const { id, uuid, createdAt, updatedAt, } = getColIndex(tableFromDB);
+        if (id == -1 ||
+            uuid == -1 ||
+            createdAt == -1 ||
+            updatedAt == -1) {
             return false;
         }
         return true;
@@ -74,15 +69,20 @@ exports.mergeSheetAndDBWithAuth = async (auth, spreadsheetId, dbconfig) => {
         const mustBeRemovedUUIDs = {};
         let intersection;
         const values = [];
-        const { idColIndex, uuidColIndex, createdAtColIndex, updatedAtColIndex, } = getColIndex(tableFromDB);
+        const dbColIndex = getColIndex(tableFromDB);
+        const dbFieldNames = tableFromDB.fields.map((f) => f.name);
+        const idColIndex = dbColIndex.id;
+        const uuidColIndex = dbColIndex.uuid;
+        const updatedAtColIndex = dbColIndex.updatedAt;
+        const createdAtColIndex = dbColIndex.createdAt;
         tableFromDB.values.forEach((rowValues) => {
             const uuid = rowValues[uuidColIndex];
             valuesFromDBMap[uuid] = rowValues;
             uuid2idMap[uuid] = rowValues[idColIndex];
         });
         const tableFromSheet = tablesFromSheets.find(tableFromSheet => tableFromSheet.name == tableFromDB.name);
-        // console.log("tableFromSheet:"+tableFromSheet);
         if (tableFromSheet && 0 < tableFromSheet.values.length) {
+            const sheetColIndex = getColIndex(tableFromSheet);
             tableFromSheet.values.forEach((rowValues, rowIndex) => {
                 let id = rowValues[idColIndex];
                 if (id == CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_INSERTED &&
@@ -100,8 +100,7 @@ exports.mergeSheetAndDBWithAuth = async (auth, spreadsheetId, dbconfig) => {
                 const createdAt = rowValues[createdAtColIndex];
                 const updatedAt = rowValues[updatedAtColIndex];
                 if (id != CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_INSERTED &&
-                    updatedAt ==
-                        CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_REMOVED) {
+                    updatedAt == CELL_VALUE_OF_MARK_THIS_ROW_TO_BE_REMOVED) {
                     mustBeRemovedUUIDs[uuid] = true;
                 }
                 else {
@@ -121,7 +120,7 @@ exports.mergeSheetAndDBWithAuth = async (auth, spreadsheetId, dbconfig) => {
                     return;
                 }
                 const valueFromDB = valuesFromDBMap[uuid];
-                const valueFromSheet = valuesFromSheetMap[uuid];
+                const valueFromSheet = regulateRowValues(dbFieldNames, sheetColIndex, valuesFromSheetMap[uuid]);
                 const updatedAtDB = moment(valueFromDB[updatedAtColIndex])
                     .toDate()
                     .getTime();

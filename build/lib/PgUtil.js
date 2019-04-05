@@ -121,10 +121,11 @@ exports.insertOrUpdateTablesOnDB = async (dbconfig, tables) => {
                 }
                 // console.log(dataTypeID, table.fields[index].name);
                 if (!(value == '' &&
-                    (dataTypeID == 20 ||
-                        dataTypeID == 23 ||
-                        dataTypeID == 2950 ||
-                        dataTypeID == 1114))) {
+                    (dataTypeID == 20 || // int8
+                        dataTypeID == 23 || // int4
+                        dataTypeID == 2950 || //
+                        dataTypeID == 1114) // timestamp without timezone
+                )) {
                     colNames.push(table.fields[index].name);
                     return true;
                 }

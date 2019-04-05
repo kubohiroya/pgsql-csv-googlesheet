@@ -8,7 +8,7 @@ const spreadsheetId = process.env.npm_package_config_spreadsheetId || process.ar
 const dbconfig = require(process.env.npm_package_config_dbconfig ||
     process.argv[5]);
 try {
-    MergeUtil_1.mergeSheetAndDB(tokenPath, clientSecretPath, index_1.SCOPE_SPREADSHEET, spreadsheetId, dbconfig);
+    MergeUtil_1.mergeSheetAndDB(tokenPath, clientSecretPath, 'installed', index_1.SCOPE_SPREADSHEET, spreadsheetId, dbconfig);
 }
 catch (err) {
     console.error(err);
