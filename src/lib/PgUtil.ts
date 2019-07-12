@@ -1,6 +1,6 @@
 import {Client, FieldDef} from 'pg';
 import { Table } from './Table';
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 const createOrReplaceFunction = (statement: string) => {
     return `

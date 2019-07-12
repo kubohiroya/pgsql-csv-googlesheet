@@ -1,21 +1,23 @@
 {
   "name": "pgsql-csv-googlesheet",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Bi-directional synchronization of updated rows on PostgreSQL and Google Spreadsheets",
-  "main": "src/index.ts",
+  "main": "src/index",
   "author": "hiroya@cuc.ac.jp",
   "license": "MIT",
   "private": false,
   "dependencies": {
+    "@types/moment": "^2.13.0",
     "@types/pg": "^7.4.10",
-    "google-auth-library": "^1.6.1",
-    "googleapis": "^32.0.0",
+    "fs-extra": "^7.0.1",
+    "google-auth-library": "^4.1.0",
+    "googleapis": "^40.0.0",
     "lodash": "^4.17.11",
     "pg": "^7.4.3",
     "readline": "^1.3.0",
     "ts-node": "^7.0.1",
     "tslib": "^1.9.3",
-    "typescript": "^3.0.1",
+    "typescript": "^3.4.1",
     "uuid": "^3.3.2"
   },
   "config": {
@@ -34,5 +36,10 @@
     "fetch": "ts-node src/fetch.ts $npm_package_config_tokenPath $npm_package_config_clientSecretPath $npm_package_config_spreadsheetId $npm_package_config_dbconfig",
     "post": "ts-node src/post.ts  $npm_package_config_tokenPath $npm_package_config_clientSecretPath $npm_package_config_spreadsheetId $npm_package_config_dbconfig",
     "merge": "ts-node src/merge.ts $npm_package_config_tokenPath $npm_package_config_clientSecretPath $npm_package_config_spreadsheetId $npm_package_config_dbconfig"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^5.0.5",
+    "@types/lodash": "^4.14.121",
+    "tsc": "^1.20150623.0"
   }
 }

@@ -1,7 +1,8 @@
 import { google } from 'googleapis';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { SheetTitleIdRelation } from './SheetTitleIdRelation';
 import { Table } from './Table';
+import { FieldDef } from 'pg';
 
 export const createSheetAPIClient = (auth: any) => {
     return new Promise(resolve => {
@@ -74,7 +75,7 @@ export const readTablesFromSheets = (
                                 return resolve(
                                     new Table(
                                         sheetTitleIdRelation.sheetTitle,
-                                        fields,
+                                        fields.map((f:string)=> {name:f}),
                                         values,
                                         -1,
                                     ),
