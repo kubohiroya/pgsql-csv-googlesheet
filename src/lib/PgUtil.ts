@@ -136,6 +136,7 @@ export const insertOrUpdateTablesOnDB = async (dbconfig: any, tables: Table[]) =
                     const colNames: string[] = [];
                     const values = row.filter(
                         (value: string, index: number) => {
+			    console.log(value);
                             const dataTypeID = table.fields[index].dataTypeID;
                             if(table.fields[index].name == 'uuid'){
                                 uuid = value;
@@ -144,10 +145,10 @@ export const insertOrUpdateTablesOnDB = async (dbconfig: any, tables: Table[]) =
                             if (
                                 !(
                                     value == '' &&
-                                    (dataTypeID == 20 ||
-                                        dataTypeID == 23 ||
-                                        dataTypeID == 2950 ||
-                                        dataTypeID == 1114)
+                                    (dataTypeID == 20 || // int8
+                                        dataTypeID == 23 || // int4
+                                        dataTypeID == 2950 || // 
+                                        dataTypeID == 1114) // timestamp without timezone
                                 )
                             ) {
                                 colNames.push(table.fields[index].name);
